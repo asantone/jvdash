@@ -1,13 +1,19 @@
 ## app.R ##
 library(shinydashboard)
+ 
+sideWidth = 250
 
 ui <- dashboardPage(
-  dashboardHeader(title = "JV Dashboard"),
+  dashboardHeader(
+    title = "JV Dashboard",
+    titleWidth = sideWidth
+    ),
   ## Sidebar content
   dashboardSidebar(
+    width = sideWidth,
     sidebarMenu(
-      menuItem("Sales", tabName = "sales", icon = icon("dashboard")),
-      menuItem("Locations", tabName = "locations", icon = icon("th"))
+      menuItem("Sales", tabName = "sales", icon = icon("file")),
+      menuItem("Locations", tabName = "locations", icon = icon("map-marker", lib = "glyphicon"))
     )
   ),
   ## Body content
@@ -23,6 +29,7 @@ ui <- dashboardPage(
                   title = "Histogram",
                   solidHeader = TRUE,
                   collapsible = TRUE,
+                  #background = "teal",
                   status = "primary", 
                   plotOutput("plot1", height = 250)
                   ),
@@ -31,6 +38,7 @@ ui <- dashboardPage(
                   title = "Controls",
                   solidHeader = TRUE,
                   collapsible = TRUE,
+                  #background = "orange",
                   status = "primary",
                   sliderInput("slider", "Number of observations:", 1, 100, 50)
                 ),
