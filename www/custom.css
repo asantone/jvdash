@@ -7,3 +7,53 @@
 .body .fa{
   font-size: 6px;
 }
+
+/*override default blue with custom blue hex value*/
+.bg-blue {
+  background-color: #00aaf0!important;
+}
+
+/* logo */
+        .skin-blue .main-header .logo {
+                              /*background-color: #00aaf0;*/
+                              }
+
+        /* logo when hovered */
+        .skin-blue .main-header .logo:hover {
+                              /*background-color: #F2952D;*/
+                              }
+
+        /* navbar (rest of the header) */
+        .skin-blue .main-header .navbar {
+                              background-color: #00aaf0;
+                              }        
+
+        /* main sidebar */
+        .skin-blue .main-sidebar {
+                              /*background-color: #f4b943;*/
+                              }
+
+        /* active selected tab in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
+                              /*background-color: #00aaf0;*/
+                              }
+
+        /* other links in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu a{
+                              /*background-color: #00ff00;*/
+                              /*color: #000000;*/
+                              }
+
+        /* other links in the sidebarmenu when hovered */
+         .skin-blue .main-sidebar .sidebar .sidebar-menu a:hover{
+                              background-color: #00aaf0;
+                              }
+        /* other links in the sidebarmenu when hovered */
+        .skin-blue .sidebar-menu > li.active > a,
+        .skin-blue .sidebar-menu > li:hover > a {
+                    border-left-color: #F2952D;
+        }
+        /* toggle button when hovered  */                    
+         .skin-blue .main-header .navbar .sidebar-toggle:hover{
+                              background-color: #F2952D;
+                              }
