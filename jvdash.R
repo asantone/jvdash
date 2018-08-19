@@ -5,7 +5,12 @@ library(dplyr)
 library(viridisLite)
 library(forecast)
 library(shiny)
+library(data.table)
 library(DT)
+library(flexdashboard)
+library(ggplot2) 
+library(waffle)
+library(BHH2)
  
 sideWidth = 250
 
@@ -56,11 +61,10 @@ ui <- dashboardPage(
   dashboardSidebar(
     width = sideWidth,
     sidebarMenu(
-      menuItem("Programs", tabName = "program", icon = icon("archive")),
+      menuItem("Programs", tabName = "program", icon = icon("paper-plane")),
       menuItem("Kit Sales", tabName = "kitsales", icon = icon("archive")),
       menuItem("Guide Sales", tabName = "guidesales", icon = icon("book")),
       menuItem("Customers", tabName = "customers", icon = icon("user")),
-      #menuItem("Locations", tabName = "locations", icon = icon("map-marker-alt"))
       menuItem("Locations", tabName = "locations", icon = icon("map-marker", lib = "glyphicon"))
     )
   ),
@@ -170,20 +174,8 @@ ui <- dashboardPage(
                         href = NULL, fill = FALSE)
               ),
               fluidRow(
-                box(
-                  title = "Student Participation over Time", width = NULL, status = "primary",
-                  div(style = 'overflow-x: scroll', DT::dataTableOutput('table'))
-                )
-              ),
-              
-              tabsetPanel(
-                id = 'customerData',
-                tabPanel("Grantees",      box(DTOutput("mytable"))),
-                tabPanel("Independent",   box(DTOutput("mytable"))),
-                tabPanel("International", box(DTOutput("mytable")))
+                plotOutput("dot")
               )
-              
-        
       ),
       
       # tab content
@@ -213,7 +205,7 @@ ui <- dashboardPage(
   )
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   set.seed(122)
   histdata <- rnorm(500)
   
@@ -222,14 +214,50 @@ server <- function(input, output) {
     hist(data)
   })
   
-  #customer data
-  test.table <- data.frame(lapply(1:8, function(x) {1:10}))
-  names(test.table) <- paste0('This_is_a_very_long_name_', 1:8)
-  
-  output$table <- DT::renderDataTable({
-    DT::datatable(test.table, 
-                  options = list(dom = 't'))
+  output$dot <- renderPlot({
+    homeschool <-c(20,43,65,18,15)
+    afterschool<-c(43,65,18,15,20)
+    inschool   <-c(65,18,15,20,43)
+    camp       <-c(18,15,20,43,65)
+    
+    #par(mfcol=c(4,1))
+    xlim <- c(6,10)
+    dotchart(homeschool, main="Homeschool", xlim=xlim, xlab="Grade")
+    #dotchart(afterschool, main="After-school", xlim=xlim, xlab="Grade")
+    #dotchart(inschool, main="In-school", xlim=xlim, xlab="Grade")
+    #dotchart(camp, main="Camp", xlim=xlim, xlab="Grade")
   })
+  
+  output$eggo <- renderPlot({
+    #data<-c(50,30,15,5)
+    #waffle(data,rows=5,title="Waffle Chart")
+    # savings <- c(`Mortgage ($84,911)`=84911, `Auto and\ntuition loans ($14,414)`=14414, 
+    #              `Home equity loans ($10,062)`=10062, `Credit Cards ($8,565)`=8565)
+    # waffle(savings/392, rows=7, size=0.5, 
+    #        colors=c("#c7d4b6", "#a3aabd", "#a0d0de", "#97b5cf"), 
+    #        title="Average Household Savings Each Year", 
+    #        xlab="1 square == $392",
+    #        keep = FALSE,
+    #        pad = 1)+ theme(plot.background = element_rect(fill = 'green', colour = 'red'))
+    
+    homeschool <-c(Grade_6=20,Grade_7=43,Grade_8=65,Grade_9=18,Grade_10=15)
+    afterschool<-c(Grade_6=43,Grade_7=65,Grade_8=18,Grade_9=15,Grade_10=20)
+    inschool   <-c(Grade_6=65,Grade_7=18,Grade_8=15,Grade_9=20,Grade_10=43)
+    camp       <-c(Grade_6=18,Grade_7=15,Grade_8=20,Grade_9=43,Grade_10=65)
+    rowCount =5
+    vColors5=viridis(5)
+    
+    iron(
+      waffle(homeschool,  rows = rowCount, colors = vColors5, title = "Home School"),
+      waffle(afterschool, rows = rowCount, colors = vColors5, title = "After-school"),
+      waffle(inschool,    rows = rowCount, colors = vColors5, title = "In-school"),
+      waffle(camp,        rows = rowCount, colors = vColors5, title = "Camp")
+    )
+    
+    
+  })
+  
+  
 }
 
 shinyApp(ui, server)
