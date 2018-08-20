@@ -11,12 +11,22 @@ library(flexdashboard)
 library(ggplot2) 
 library(waffle)
 library(BHH2)
- 
+library(dygraphs)
+
 sideWidth = 250
 
 #custom colors
 lmitBlue = "#00aaf0"
 lmitOrange = "#F2952D"
+
+#Data Import
+ed = read.csv("educatorRosterDataYYYY.csv")
+st = read.csv("studentRosterDataYYYY.csv")
+te = read.csv("teamRosterDataYYYY.csv")
+jv <- cbind(st, ed$Educators, te$Teams)
+names(jv) <- c("Date", "Students", "Educators", "Teams") #rename
+t = data.table(jv$Students, jv$Educators, jv$Teams)
+names(t) <- c("Students", "Educators", "Teams")
 
 thm <- 
   hc_theme(
@@ -36,6 +46,8 @@ thm <-
 #chartTheme = hc_theme_chalk()
 #chartTheme = hc_theme_tufte()
 chartTheme = hc_theme_economist()
+
+
 
 
 #--Team Data Calculations (START)
@@ -174,8 +186,39 @@ ui <- dashboardPage(
                         href = NULL, fill = FALSE)
               ),
               fluidRow(
-                plotOutput("dot")
-              )
+                #plotOutput("dot")
+                #h2("Educator Count"),
+                dygraph(jv, main="JV Participation by Year") %>% 
+                  dyRangeSelector(dateWindow = c("2015","2018")) %>% 
+                  dyOptions(stackedGraph = FALSE) %>%
+                  dyOptions(drawPoints = TRUE) %>%
+                  dyLegend(show = "always", hideOnMouseOut = FALSE, width=400)%>%
+                  dyOptions(fillGraph = TRUE, fillAlpha = 0.3)  %>%
+                  dyOptions(drawPoints = TRUE, pointSize = 2) %>%
+                  dySeries("Students", label = "Students") %>%
+                  dySeries("Educators", label = "Educators") %>%
+                  dySeries("Teams", label = "Teams") 
+                  
+              ),
+              #tabset panel
+               tabsetPanel(type = "tabs",
+                           tabPanel("Participants", 
+                                    h2("Participation")
+                                    #plotOutput("gg")
+                                    
+                           )        
+                           # ),
+                           # tabPanel("Students",
+                           #          h2("Student Count"),
+                           #          ggplot(data=jv,aes(x=Date,y=Students)) +
+                           #            geom_point()
+                           # ),
+                           # tabPanel("Teams",
+                           #          h2("Team Count"),
+                           #          ggplot(data=jv,aes(x=Date,y=Teams)) +
+                           #            geom_point()
+                           # )
+               )
       ),
       
       # tab content
@@ -213,6 +256,18 @@ server <- function(input, output, session) {
     data <- histdata[seq_len(input$slider)]
     hist(data)
   })
+  
+  output$gg <- renderPlot({
+    #counts <- table(jv$Teams, jv$Students, jv$Educators)
+    #barplot(t, names.arg = c(2015,2016,2017,2018),beside=TRUE ,ylim=c(0,700))
+    #ggplot(data=jv,aes(x=Date,y=Students))
+  })
+  
+  #output$educatorPlot({
+    #ggplot(jvParticipation, aes(Date, Educators)) + geom_line() +
+    #  scale_x_date(format = "%b-%Y") + xlab("") + ylab("Educators")
+  #})
+  
   
   output$dot <- renderPlot({
     homeschool <-c(20,43,65,18,15)
